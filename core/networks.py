@@ -34,7 +34,7 @@ def group_norm(features):
 #######################################################################
 
 class Backbone(nn.Module, ABC_Model):
-    def __init__(self, model_name, num_classes=20, mode='fix', segmentation=False):
+    def __init__(self, model_name, state_path, num_classes=20, mode='fix', segmentation=False):
         super().__init__()
 
         self.mode = mode
@@ -47,7 +47,7 @@ class Backbone(nn.Module, ABC_Model):
         if 'resnet' in model_name:
             self.model = resnet.ResNet(resnet.Bottleneck, resnet.layers_dic[model_name], strides=(2, 2, 2, 1), batch_norm_fn=self.norm_fn)
 
-            state_dict = model_zoo.load_url(resnet.urls_dic[model_name])
+            state_dict = torch.load(state_path)
             state_dict.pop('fc.weight')
             state_dict.pop('fc.bias')
 
@@ -73,8 +73,8 @@ class Backbone(nn.Module, ABC_Model):
         self.stage5 = nn.Sequential(self.model.layer4)
 
 class Classifier(Backbone):
-    def __init__(self, model_name, num_classes=20, mode='fix'):
-        super().__init__(model_name, num_classes, mode)
+    def __init__(self, model_name, state_path, num_classes=20, mode='fix'):
+        super().__init__(model_name, state_path, num_classes, mode)
         
         self.classifier = nn.Conv2d(2048, num_classes, 1, bias=False)
         self.num_classes = num_classes

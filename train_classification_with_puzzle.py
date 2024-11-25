@@ -49,6 +49,7 @@ parser.add_argument('--data_dir', default='../VOCtrainval_11-May-2012/', type=st
 # Network
 ###############################################################################
 parser.add_argument('--architecture', default='resnet50', type=str)
+parser.add_argument('--state_path', default='', type=str)
 parser.add_argument('--mode', default='normal', type=str) # fix
 
 ###############################################################################
@@ -104,6 +105,7 @@ if __name__ == '__main__':
     log_path = log_dir + f'{args.tag}.txt'
     data_path = data_dir + f'{args.tag}.json'
     model_path = model_dir + f'{args.tag}.pth'
+    state_path = args.state_path
 
     set_seed(args.seed)
     log_func = lambda string='': log_print(string, log_path)
@@ -172,7 +174,7 @@ if __name__ == '__main__':
     ###################################################################################
     # Network
     ###################################################################################
-    model = Classifier(args.architecture, meta_dic['classes'], mode=args.mode)
+    model = Classifier(args.architecture, state_path, meta_dic['classes'], mode=args.mode)
     param_groups = model.get_parameter_groups(print_fn=None)
     
     gap_fn = model.global_average_pooling_2d
