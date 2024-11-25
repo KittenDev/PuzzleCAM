@@ -48,10 +48,7 @@ class Backbone(nn.Module, ABC_Model):
             self.model = resnet.ResNet(resnet.Bottleneck, resnet.layers_dic[model_name], strides=(2, 2, 2, 1), batch_norm_fn=self.norm_fn)
 
             state_dict = torch.load(state_path)
-            state_dict.pop('fc.weight')
-            state_dict.pop('fc.bias')
-
-            self.model.load_state_dict(state_dict)
+            self.model.load_state_dict(state_dict, strict=False)
         else:
             if segmentation:
                 dilation, dilated = 4, True
